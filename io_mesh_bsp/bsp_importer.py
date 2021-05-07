@@ -455,41 +455,19 @@ def create_materials(texture_data, options):
         main_shader = node_tree.nodes['Principled BSDF']
         output_node = node_tree.nodes['Material Output']
         node_tree.nodes.remove(main_shader) # Replace with Diffuse
-        if texture_entry['is_emissive'] and mask is None:
-            main_shader = node_tree.nodes.new('ShaderNodeEmission')
-        else:
-            main_shader = node_tree.nodes.new('ShaderNodeBsdfDiffuse')
+
+        main_shader = node_tree.nodes.new('ShaderNodeBsdfPrincipled')
+
+        # Quake doesn't have shiny textures, so clear out the roughness and specular
+        main_shader.inputs['Roughness'].default_value = 1.0
+        main_shader.inputs['Specular'].default_value = 0.0
 
         image_node = node_tree.nodes.new('ShaderNodeTexImage')
         image_node.image = image
         image_node.interpolation = 'Closest'
         image_node.location = [-256.0, 300.0]
         node_tree.links.new(image_node.outputs['Color'], main_shader.inputs[0])
-
-        # emission mask shader
-        if mask is not None:
-            mask_node = node_tree.nodes.new('ShaderNodeTexImage')
-            mask_node.image = mask
-            mask_node.interpolation = 'Closest'
-            mask_mix_shader = node_tree.nodes.new('ShaderNodeMixShader')
-            mask_emission_shader = node_tree.nodes.new('ShaderNodeEmission')
-            node_tree.links.new(image_node.outputs['Color'], mask_emission_shader.inputs[0])
-            node_tree.links.new(mask_node.outputs['Color'], mask_mix_shader.inputs[0])
-            node_tree.links.new(main_shader.outputs[0], mask_mix_shader.inputs[1])
-            node_tree.links.new(mask_emission_shader.outputs[0], mask_mix_shader.inputs[2])
-            main_shader = mask_mix_shader
-
         node_tree.links.new(main_shader.outputs[0], output_node.inputs['Surface'])
-
-        # set up transparent textures
-        if texture_entry['use_alpha']:
-            mat.blend_method = 'CLIP' # Eevee material setting
-            mix_shader = node_tree.nodes.new('ShaderNodeMixShader')
-            trans_shader = node_tree.nodes.new('ShaderNodeBsdfTransparent')
-            node_tree.links.new(image_node.outputs['Alpha'], mix_shader.inputs[0])
-            node_tree.links.new(trans_shader.outputs[0], mix_shader.inputs[1])
-            node_tree.links.new(main_shader.outputs[0], mix_shader.inputs[2])
-            node_tree.links.new(mix_shader.outputs[0], output_node.inputs['Surface'])
 
 
 def import_bsp(context, filepath, options):
