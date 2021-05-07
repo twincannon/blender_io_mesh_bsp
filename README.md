@@ -1,6 +1,26 @@
-# Quake 1 BSP Importer for Blender
+# UE4 .fbx Support Fork
 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=S3GTZ2J938U6Y&lc=GB&item_name=Andrew%20Palmer&currency_code=GBP&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
+This fork makes tweaks to support exporting the imported .bsp with textures to an .fbx file that is importable to Unreal Engine 4
+
+After installing the script, to export a map UE4-ready:
+
+1. Open blender, start new file
+2. Save as a .blend file immediately to prevent later errors
+3. Hit X to delete the default cube
+4. File -> Import -> Quake BSP
+5. File -> External Data -> Unpack All Into Files (this will create a /textures folder where the .blend file is)
+6. File -> Export -> .fbx
+7. Import into Unreal
+
+For best results you will want to make a base material first and create material instances, as the shader parameters such as roughness etc. won't be carried over (and thus all the materials will be by default shiny and gross). Do this by selecting "Create New Material Instances" in the "Material Import Method" dropdown when importing the mesh, selecting the existing material, and setting the texture parameter up:
+
+![Imported level (apdm3)](https://raw.githubusercontent.com/twincannon/blender_io_mesh_bsp/master/README_img/material_import.png)
+
+
+Original README below (including installation instructions for this script):
+
+
+# Quake 1 BSP Importer for Blender
 
 An add-on for [Blender](https://www.blender.org/) that makes it possible to import
 Quake BSP files, including textures (which are stored in the BSP) as materials. It
@@ -12,10 +32,10 @@ to run this addon. At the time of writing, Blender 2.80 is still in development,
 this addon may stop functioning due to a change in Blender, but I will try and keep it
 working.
 
-![Imported level (apdm3)](https://raw.githubusercontent.com/andyp123/blender_io_mesh_bsp/master/README_img/apdm3.png)
+![Imported level (apdm3)](https://raw.githubusercontent.com/twincannon/blender_io_mesh_bsp/master/README_img/apdm3.png)
 
 ## Installation
-1. Download the latest release from GitHub by clicking [here](https://github.com/andyp123/blender_io_mesh_bsp/releases/).
+1. Download the latest release from GitHub by clicking [here](https://github.com/twincannon/blender_io_mesh_bsp/releases/download/1.0/io_mesh_bsp.zip).
 2. In Blender, open Preferences (Edit > Preferences) and switch to the Add-ons section.
 3. Select 'Install Add-on from file...' and select the file that you downloaded.
 4. Search for the add-on in the list (enter 'bsp' to quickly find it) and enable it.
