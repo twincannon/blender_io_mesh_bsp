@@ -8,7 +8,7 @@ After installing the script, to export a map UE4-ready:
 2. Save as a .blend file immediately to prevent later errors
 3. Hit X to delete the default cube
 4. File -> Import -> Quake BSP
-5. File -> External Data -> Unpack All Into Files (this will create a /textures folder where the .blend file is)
+5. File -> External Data -> Unpack All Into Files - make sure to click again on the pop-up that appears (this will create a /textures folder where the .blend file is)
 6. File -> Export -> .fbx
 7. Import into Unreal
 
