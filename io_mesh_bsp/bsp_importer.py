@@ -585,6 +585,9 @@ def import_bsp(context, filepath, options):
             if remove_hidden and texture_name in ignored_texnames:
                 continue
 
+            if texture_name == '':
+                continue
+
             texS = texinfo[0:3]
             texT = texinfo[4:7]
 
