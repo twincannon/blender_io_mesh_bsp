@@ -478,12 +478,15 @@ def import_bsp(context, filepath, options):
     bpy.context.scene.cursor.location = ((0,0,0))
     bpy.context.scene.cursor.rotation_euler = ((0,0,0))
 
+    print("Processing file: %s" % (filepath))
+
     # Fix it so if blender does the thing where it appends the .blend file to the filepath, we strip it
-    fixed_filepath = filepath[:filepath.rfind("\\")+1]
+    # nevermind - this removes the .bsp! but we have an edge case where it appends the .blend somehow? the fix would be in the init py
+    #fixed_filepath = filepath[:filepath.rfind("\\")+1]
 
     header = 0 # scope header variable outside with block
     bsp2 = False
-    with open(fixed_filepath, 'rb') as file:
+    with open(filepath, 'rb') as file:
         header_data = file.read(struct.calcsize(fmt_BSPHeader))
         header = BSPHeader._make(struct.unpack(fmt_BSPHeader, header_data))
 
@@ -500,9 +503,9 @@ def import_bsp(context, filepath, options):
         else:
             num_faces = int(header.faces_size / struct.calcsize(fmt_BSPFace))
             num_edges = int(header.edges_size / struct.calcsize(fmt_BSPEdge))
-
+        
         print("-- IMPORTING BSP --")
-        print("Source file: %s (%d)" % (fixed_filepath, header.version))
+        print("Source file: %s (%d)" % (filepath, header.version))
         print("bsp contains %d models (faces = %d, edges = %d, verts = %d)" % (num_models, num_faces, num_edges, num_verts))
 
         # read models, faces, edges and vertices into buffers
@@ -525,7 +528,7 @@ def import_bsp(context, filepath, options):
     # TODO: Gracefully handle case of no image data contained in bsp (e.g. bsp 30)
     # load texture data (name, width, height, image)
     print("-- LOADING TEXTURES --")
-    texture_data = load_textures(context, fixed_filepath, options['brightness_adjust'], (header.version is not 30))
+    texture_data = load_textures(context, filepath, options['brightness_adjust'], (header.version is not 30))
     if options['create_materials']:
         create_materials(texture_data, options)
 
@@ -659,7 +662,7 @@ def import_bsp(context, filepath, options):
         bm.free()
 
     # Move objects to a new collection
-    map_name = os.path.basename(fixed_filepath).split('.')[0]
+    map_name = os.path.basename(filepath).split('.')[0]
     map_collection = bpy.data.collections.new(map_name)
     bpy.context.scene.collection.children.link(map_collection)
 
@@ -678,7 +681,7 @@ def import_bsp(context, filepath, options):
 
     if create_entities or create_cameras or create_lights or import_all:
         scale = options['scale']
-        entities = get_entity_data(fixed_filepath, header.entities_ofs, header.entities_size)
+        entities = get_entity_data(filepath, header.entities_ofs, header.entities_size)
         added_objects = []
         added_lights = []
         for entity in entities:
